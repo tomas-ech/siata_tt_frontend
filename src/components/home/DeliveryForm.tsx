@@ -42,7 +42,7 @@ export const DeliveryForm = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-xl font-bold mb-6 text-gray-800">
+      <h3 className="text-xl font-bold mb-6">
         Configurar Pedido
       </h3>
 
@@ -70,7 +70,7 @@ export const DeliveryForm = () => {
                 </div>
               </div>
               <div>
-                <label className="block  font-medium mb-2">
+                <label className="block font-medium mb-2">
                   Cantidad
                 </label>
                 <div className="flex items-center ">
