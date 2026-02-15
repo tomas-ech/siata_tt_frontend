@@ -8,8 +8,8 @@ import {
 } from "../utils/validations/authValidations";
 import { CustomInput } from "../components/commons/CustonInput";
 import { CustomButton } from "../components/commons/CustomButton";
-import { loginService } from "../features/auth/services/login";
-import { registerService } from "../features/auth/services/register";
+import { loginService } from "../utils/services/login";
+import { registerService } from "../utils/services/register";
 
 const AuthPage = () => {
   const [currentTab, setCurrentTab] = useState(0);

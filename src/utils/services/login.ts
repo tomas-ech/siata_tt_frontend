@@ -1,4 +1,4 @@
-import api from "../../../api/axios";
+import api from "../../api/axios";
 
 export const loginService = async (email: string, pass: string) => {
     const formData = new URLSearchParams();
