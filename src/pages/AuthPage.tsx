@@ -33,7 +33,7 @@ const AuthPage = () => {
 
         localStorage.setItem("token", data.access_token);
 
-        // navigate("/");
+        navigate("/home");
       } else {
         await registerService({
           email: values.email,
@@ -46,7 +46,7 @@ const AuthPage = () => {
         alert("Registro exitoso, ahora puedes iniciar sesión");
       }
     } catch (error: any) {
-        alert("Ocurrió un error inesperado");
+        alert("Error, revisa tus datos e intenta de nuevo");
       
     } finally {
       setSubmitting(false);
