@@ -4,7 +4,6 @@ import {
   Package,
   Ship,
   Truck,
-  MapPin,
   Calendar,
   Clock,
   DollarSign,
