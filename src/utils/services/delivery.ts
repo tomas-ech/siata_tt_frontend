@@ -10,4 +10,8 @@ export const deliveryService = {
     const response = await api.get('/delivery/');
     return response.data;
   },
+  getAllByUser: async (userId: number) => {
+    const response = await api.get(`/delivery/user/${userId}`);
+    return response.data;
+  },
 };

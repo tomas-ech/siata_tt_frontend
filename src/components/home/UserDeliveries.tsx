@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { deliveryService } from "../../utils/services/delivery";
-import { Package, Ship, Truck, MapPin, Calendar, Clock } from "lucide-react";
+import {
+  Package,
+  Ship,
+  Truck,
+  MapPin,
+  Calendar,
+  Clock,
+  DollarSign,
+} from "lucide-react";
 import type { IDeliveryResponse } from "../../types/delivery";
 
 export const UserDeliveries = () => {
@@ -10,8 +18,13 @@ export const UserDeliveries = () => {
   useEffect(() => {
     const fetchDeliveries = async () => {
       try {
-        const data = await deliveryService.getAll();
-        setDeliveries(data);
+        const localUser = localStorage.getItem("user");
+        if (localUser) {
+          const data = await deliveryService.getAllByUser(
+            JSON.parse(localUser).user_id,
+          );
+          setDeliveries(data);
+        }
       } catch (error) {
         console.error("Error cargando envíos:", error);
       } finally {
@@ -20,7 +33,6 @@ export const UserDeliveries = () => {
     };
     fetchDeliveries();
   }, []);
-
 
   if (isLoading)
     return <div className="animate-pulse space-y-4">Cargando...</div>;
@@ -35,12 +47,9 @@ export const UserDeliveries = () => {
           <span className="text-2xl font-black text-primary">
             {deliveries.length}
           </span>
-          <p className=" font-bold uppercase">
-            Paquetes
-          </p>
+          <p className=" font-bold uppercase">Paquetes</p>
         </div>
       </div>
-
 
       <div className="p-6 space-y-6">
         {deliveries.length === 0 ? (
@@ -48,9 +57,7 @@ export const UserDeliveries = () => {
             <div className="bg-gray-50 size-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="text-gray-300 size-10" />
             </div>
-            <p className="font-medium">
-              No se encontraron envíos
-            </p>
+            <p className="font-medium">No se encontraron envíos</p>
           </div>
         ) : (
           deliveries.map((delivery) => (
@@ -82,21 +89,19 @@ const DeliveryCard = ({ delivery }: DeliveryCardProp) => {
             <h4 className="font-bold group-hover:text-primary transition-colors">
               Código de seguimiento:
             </h4>
-            <p className="text-lg font-mono">
-              {delivery.tracking_code}
-            </p>
+            <p className="text-lg font-mono">{delivery.tracking_code}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 border-y border-gray-50">
-        <div className="flex items-center gap-3 ">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 ">
+        {/* <div className="flex items-center gap-3 ">
           <MapPin size={25} className="text-error" />
           <div className="text-lg">
             <p className="font-medium">Destino</p>
             <p className="font-bold">{delivery.destination_id}</p>
           </div>
-        </div>
+        </div> */}
         <div className="flex items-center gap-3 ">
           <Calendar size={25} className="text-primary" />
           <div className="text-lg">
@@ -115,17 +120,20 @@ const DeliveryCard = ({ delivery }: DeliveryCardProp) => {
             </p>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end items-center">
-        <p className="text-2xl font-black">
-          <span className="text-xl font-bold mr-1">$</span>
-          {(
-            delivery.price +
-            delivery.ship_cost -
-            delivery.discount
-          ).toLocaleString()}
-        </p>
+        <div className="flex items-center gap-3">
+          <DollarSign size={25} className="text-secondary-hover" />
+          <div className="text-lg">
+            <p className="font-medium">Inversión</p>
+            <p className="text-xl font-black">
+              <span className="text-xl font-bold mr-1">$</span>
+              {(
+                delivery.price +
+                delivery.ship_cost -
+                delivery.discount
+              ).toLocaleString()}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
