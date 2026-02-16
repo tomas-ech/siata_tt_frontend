@@ -1,20 +1,29 @@
 import { useState } from "react";
-import { useProducts } from "../../../providers/ProductProvider";
 import { DeliveryForm } from "./DeliveryForm";
-import { DeliverySummary } from "./DeliverySummary";
+import { useNavigate } from "react-router-dom";
 import { ProductSlider } from "./ProductSlider";
 import { UserDeliveries } from "./UserDeliveries";
+import { DeliverySummary } from "./DeliverySummary";
 import { LogOut, Package, User } from "lucide-react";
 import { CustomButton } from "../commons/CustomButton";
+import { useProducts } from "../../../providers/ProductProvider";
 
 export const HomePageContent = () => {
-  const { isLoading } = useProducts();
-  const [currentTab, setCurrentTab] = useState(0)
+  const { isLoading, userInfo } = useProducts();
+  const [currentTab, setCurrentTab] = useState(0);
+  const navigate = useNavigate();
 
   if (isLoading) return <p>Cargando sistema...</p>;
 
+  const handleLogOut = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   return (
-    <div className={`h-full min-h-screen w-screen transition-colors duration-150 ${currentTab === 0 ? "bg-primary" : "bg-secondary"}`}>
+    <div
+      className={`h-full min-h-screen w-screen transition-colors duration-150 ${currentTab === 0 ? "bg-primary" : "bg-secondary"}`}
+    >
       <header className="bg-white">
         <div className="max-w-7xl mx-auto py-2 flex items-end gap-x-2">
           <h1 className="text-2xl font-black">SIATA</h1>
@@ -45,30 +54,25 @@ export const HomePageContent = () => {
             >
               <Package className="size-4" />
               Mis Envíos
-              {/* {shipments.filter((s) => s.status !== "entregado").length > 0 && (
-                <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5">
-                  {shipments.filter((s) => s.status !== "entregado").length}
-                </span>
-              )} */}
             </button>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-nowrap">
             <div className="flex items-center gap-2">
               <User className="size-5" />
-              <span>Nombre</span>
+              <span>{userInfo?.user_name ?? ""}</span>
             </div>
-            <CustomButton onClick={() => {}} variant="alert">
+            <CustomButton onClick={handleLogOut} variant="alert">
               <LogOut className="size-5" />
               Log Out
             </CustomButton>
           </div>
         </div>
       </div>
-      
+
       <main className="max-w-7xl mx-auto px-4 py-8">
         {currentTab == 0 ? (
           <>
-            <ProductSlider /> 
+            <ProductSlider />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <DeliveryForm />

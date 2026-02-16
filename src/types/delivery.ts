@@ -1,4 +1,4 @@
-export interface IDelivery {
+export interface IDeliveryBase {
     user_id: number,
     product_id: number,
     amount: number,
@@ -8,5 +8,11 @@ export interface IDelivery {
     ship_cost: number,
     delivery_date: Date,
     destination_id: number,
-    is_marine: boolean
+    is_marine: boolean,
+}
+
+export interface IDeliveryResponse extends IDeliveryBase {
+    id: number
+    tracking_code: string,
+    registry_date: Date,
 }

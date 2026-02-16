@@ -11,10 +11,10 @@ import { CustomButton } from "../commons/CustomButton";
 import { useProducts } from "../../../providers/ProductProvider";
 import { calculateDeliveryDetails } from "../../utils/calculateDelivery";
 import { deliveryService } from "../../utils/services/delivery";
-import type { IDelivery } from "../../types/delivery";
+import type { IDeliveryBase } from "../../types/delivery";
 
 export const DeliverySummary = () => {
-  const { selectedProduct, amount, deliveryType, destination } = useProducts();
+  const { selectedProduct, amount, deliveryType, destination, userInfo } = useProducts();
 
   const { subtotal, discount, total, rate } = useMemo(() => {
     if (!selectedProduct)
@@ -48,8 +48,8 @@ export const DeliverySummary = () => {
     try {
       const daysToAdd = deliveryType == "mar" ? 15 : 10;
 
-      const deliveryData: IDelivery = {
-        user_id: 1,
+      const deliveryData: IDeliveryBase = {
+        user_id: userInfo?.user_id  ?? 1,
         product_id: selectedProduct?.id,
         amount: amount,
         delivery_type_id: deliveryType == "mar" ? 2 : 1,
@@ -61,10 +61,10 @@ export const DeliverySummary = () => {
         is_marine: deliveryType == "mar",
       };
 
-      await deliveryService(deliveryData);
+      await deliveryService.create(deliveryData);
 
       alert("¡Pedido realizado con éxito!");
-      
+
     } catch (error) {
       console.error("Error al crear el pedido:", error);
       alert("Hubo un error al procesar tu pedido.");

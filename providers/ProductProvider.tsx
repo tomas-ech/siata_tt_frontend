@@ -8,9 +8,15 @@ import {
 import { productService } from "../src/utils/services/products";
 import type { IProduct } from "../src/types/product";
 
+interface userInfo {
+  user_id: number;
+  user_name: string;
+}
+
 interface IProductContext {
   products: IProduct[];
   isLoading: boolean;
+  userInfo: userInfo | undefined;
   selectedProduct: IProduct | null;
   amount: number;
   deliveryType: "mar" | "tierra";
@@ -32,6 +38,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [amount, setAmount] = useState(1);
   const [deliveryType, setDeliveryType] = useState<"mar" | "tierra">("mar");
   const [destination, setDestination] = useState("Buenos Aires, Argentina");
+  const [userInfo, setUserInfo] = useState();
 
   const resetOrder = () => {
     setAmount(1);
@@ -42,6 +49,12 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const localUser = localStorage.getItem("user");
+
+        if (localUser) {
+          const userObj = JSON.parse(localUser);
+          setUserInfo(userObj);
+        }
         setIsLoading(true);
         const productsData = await productService();
         setProducts(productsData);
@@ -58,6 +71,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     <ProductContext.Provider
       value={{
         products,
+        userInfo,
         isLoading,
         selectedProduct,
         setSelectedProduct,

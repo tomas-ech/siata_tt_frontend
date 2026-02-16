@@ -31,7 +31,11 @@ const AuthPage = () => {
       if (currentTab == 0) {
         const data = await loginService(values.email, values.password);
 
+        console.log(data.user);
+        
+
         localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
 
         navigate("/home");
       } else {
