@@ -17,6 +17,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
+    "react-slick": "^0.31.0",
+    "slick-carousel": "^1.8.1",
     "yup": "^1.7.1"
   },
   "devDependencies": {
@@ -24,6 +26,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@types/react-slick": "^0.23.13",
     "@vitejs/plugin-react-swc": "^4.2.2",
     "autoprefixer": "^10.4.24",
     "eslint": "^9.39.1",

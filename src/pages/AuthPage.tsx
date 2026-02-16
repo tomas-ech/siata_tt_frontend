@@ -8,8 +8,8 @@ import {
 } from "../utils/validations/authValidations";
 import { CustomInput } from "../components/commons/CustonInput";
 import { CustomButton } from "../components/commons/CustomButton";
-import { loginService } from "../features/auth/services/login";
-import { registerService } from "../features/auth/services/register";
+import { loginService } from "../utils/services/login";
+import { registerService } from "../utils/services/register";
 
 const AuthPage = () => {
   const [currentTab, setCurrentTab] = useState(0);
@@ -31,9 +31,13 @@ const AuthPage = () => {
       if (currentTab == 0) {
         const data = await loginService(values.email, values.password);
 
-        localStorage.setItem("token", data.access_token);
+        console.log(data.user);
+        
 
-        // navigate("/");
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        navigate("/home");
       } else {
         await registerService({
           email: values.email,
@@ -46,7 +50,7 @@ const AuthPage = () => {
         alert("Registro exitoso, ahora puedes iniciar sesión");
       }
     } catch (error: any) {
-        alert("Ocurrió un error inesperado");
+        alert("Error, revisa tus datos e intenta de nuevo");
       
     } finally {
       setSubmitting(false);
