@@ -40,7 +40,7 @@ export const ProductSlider = ( ) => {
         {products.map((product) => (
           <div key={product.id} className="p-2">
             <div
-              className={`bg-white rounded-lg cursor-pointer transition-all duration-150  hover:scale-105 ${
+              className={`bg-white rounded-lg cursor-pointer overflow-hidden transition-all duration-150  hover:scale-95 ${
                 selectedProduct?.id === product.id ? 'ring-4 ring-secondary' : ''
               }`}
               onClick={() => setSelectedProduct(product)}

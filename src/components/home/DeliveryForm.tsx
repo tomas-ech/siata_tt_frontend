@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { CustomButton } from "../commons/CustomButton";
 import { Formik, Form, useFormikContext } from "formik";
-import { Ship, Truck, MapPin, Plus, Minus } from "lucide-react";
+import { Ship, Truck, Plus, Minus } from "lucide-react";
 import { useProducts } from "../../../providers/ProductProvider";
 import { deliverySchema } from "../../utils/validations/deliveryValidations";
 
@@ -34,7 +34,7 @@ export const DeliveryForm = () => {
 
   if (!selectedProduct) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6 text-center text-gray-500 py-8">
+      <div className="bg-white rounded-lg shadow-lg p-6 text-center py-8">
         Selecciona un producto del carrusel
       </div>
     );
@@ -53,7 +53,7 @@ export const DeliveryForm = () => {
           destination: DESTINATIONS[0],
         }}
         validationSchema={deliverySchema}
-        onSubmit={(values) => console.log("Pedido final:", values)}
+        onSubmit={() => {}}
       >
         {({ values, setFieldValue }) => (
           <Form className="space-y-6">
@@ -112,7 +112,7 @@ export const DeliveryForm = () => {
                 >
                   <div className="flex flex-col items-center py-2">
                     <Ship className="mb-1" />
-                    <span className="">Mar (15-30 d)</span>
+                    <span className="">Mar (15d)</span>
                   </div>
                 </CustomButton>
 
@@ -124,7 +124,7 @@ export const DeliveryForm = () => {
                 >
                   <div className="flex flex-col items-center py-2">
                     <Truck className="mb-1" />
-                    <span className="">Tierra (5-10 d)</span>
+                    <span className="">Tierra (10d)</span>
                   </div>
                 </CustomButton>
               </div>

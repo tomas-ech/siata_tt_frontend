@@ -8,53 +8,35 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { CustomButton } from "../commons/CustomButton";
-import { useProducts } from "../../../providers/ProductProvider"; // Ajusta la ruta según tu proyecto
-
-// --- Lógica de Negocio (Se mantiene igual, fuera para testabilidad) ---
-const calculateOrderDetails = (
-  price: number,
-  amount: number,
-  method: "mar" | "tierra",
-) => {
-  const subtotal = price * amount;
-  const shippingRate = method === "mar" ? 0.1 : 0.2;
-  const shippingCost = subtotal * shippingRate;
-
-  let discountPercent = 0;
-  if (amount >= 10) discountPercent = 15;
-  else if (amount >= 5) discountPercent = 10;
-  else if (amount >= 3) discountPercent = 5;
-
-  const discount = subtotal * (discountPercent / 100);
-  const total = subtotal + shippingCost - discount;
-
-  return { subtotal, shippingCost, discount, total, discountPercent };
-};
+import { useProducts } from "../../../providers/ProductProvider";
+import { calculateDeliveryDetails } from "../../utils/calculateDelivery";
+import { deliveryService } from "../../utils/services/delivery";
+import type { IDelivery } from "../../types/delivery";
 
 export const DeliverySummary = () => {
   const { selectedProduct, amount, deliveryType, destination } = useProducts();
 
-  const { subtotal, shippingCost, discount, total, discountPercent } =
-    useMemo(() => {
-      if (!selectedProduct)
-        return {
-          subtotal: 0,
-          shippingCost: 0,
-          discount: 0,
-          total: 0,
-          discountPercent: 0,
-        };
+  const { subtotal, discount, total, rate } = useMemo(() => {
+    if (!selectedProduct)
+      return {
+        subtotal: 0,
+        discount: 0,
+        total: 0,
+        rate: 0,
+      };
 
-      return calculateOrderDetails(selectedProduct.price, amount, deliveryType);
-    }, [selectedProduct, amount, deliveryType]);
+    return calculateDeliveryDetails(
+      selectedProduct.price,
+      amount,
+      deliveryType,
+    );
+  }, [selectedProduct, amount, deliveryType]);
 
   if (!selectedProduct) {
     return (
       <div className="bg-white rounded-lg p-8 text-center">
-        <Package className="mx-auto size-12 text-gray-300 mb-4" />
-        <h3 className="text-xl font-bold text-gray-800 mb-2">
-          Resumen del Pedido
-        </h3>
+        <Package className="mx-auto size-12 mb-4" />
+        <h3 className="text-xl font-bold mb-2">Resumen del Pedido</h3>
         <p className="text-gray-500 italic">
           Selecciona un producto para calcular costos.
         </p>
@@ -62,15 +44,36 @@ export const DeliverySummary = () => {
     );
   }
 
-  const handleCheckout = () => {
-    alert(`¡Pedido confirmado! Total: $${total.toFixed(2)}`);
+  const handleCheckout = async () => {
+    try {
+      const daysToAdd = deliveryType == "mar" ? 15 : 10;
+
+      const deliveryData: IDelivery = {
+        user_id: 1,
+        product_id: selectedProduct?.id,
+        amount: amount,
+        delivery_type_id: deliveryType == "mar" ? 2 : 1,
+        price: total,
+        discount: discount,
+        ship_cost: deliveryType == "mar" ? 20 : 10,
+        delivery_date: new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000),
+        destination_id: 1,
+        is_marine: deliveryType == "mar",
+      };
+
+      await deliveryService(deliveryData);
+
+      alert("¡Pedido realizado con éxito!");
+      
+    } catch (error) {
+      console.error("Error al crear el pedido:", error);
+      alert("Hubo un error al procesar tu pedido.");
+    }
   };
 
   return (
     <div className="bg-white rounded-xl p-6 overflow-hidden">
-      <h3 className="text-xl font-bold mb-2">
-        Resumen del Pedido
-      </h3>
+      <h3 className="text-xl font-bold mb-2">Resumen del Pedido</h3>
 
       <div className="flex items-center gap-4 p-3 rounded-xl mb-6">
         <img
@@ -79,9 +82,7 @@ export const DeliverySummary = () => {
           className="w-20 h-20 object-cover rounded-lg "
         />
         <div className="flex-1">
-          <p className="font-bold leading-tight">
-            {selectedProduct.name}
-          </p>
+          <p className="font-bold leading-tight">{selectedProduct.name}</p>
           <div className="flex gap-3 mt-1">
             <span className="text-md font-medium px-2 py-0.5 rounded">
               x{amount}
@@ -93,36 +94,28 @@ export const DeliverySummary = () => {
         </div>
       </div>
 
-
       <div className="space-y-4 mb-2">
         <SummaryLine
           icon={<Package size={16} />}
           label="Subtotal"
           value={subtotal}
         />
+
+        <SummaryLine icon={<DollarSign size={16} />} label="Envío" value={10} />
+
         <SummaryLine
-          icon={<DollarSign size={16} />}
-          label="Envío"
-          value={shippingCost}
+          icon={<TrendingDown size={16} />}
+          label={`Descuento (${discount > 0 ? rate * 100 : 0}%)`}
+          value={-discount}
+          className="text-secondary-hover font-bold"
         />
 
-        {discount > 0 && (
-          <SummaryLine
-            icon={<TrendingDown size={16} />}
-            label={`Descuento (${discountPercent}%)`}
-            value={-discount}
-            className="text-secondary-hover font-bold"
-          />
-        )}
-
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-bold">
-              Total a pagar
-            </span>
-            <span className="text-2xl font-black text-primary-hover">
-              ${total.toFixed(2)}
-            </span>
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-bold">Total a pagar</span>
+          <span className="text-2xl font-black text-primary-hover">
+            ${total.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       <div className="p-4 rounded-xl mb-2">
@@ -132,7 +125,9 @@ export const DeliverySummary = () => {
           ) : (
             <Truck className="text-secondary-hover shrink-0" />
           )}
-          <div className={`${deliveryType === "mar" ? "text-primary-hover" : "text-secondary-hover"}`}>
+          <div
+            className={`${deliveryType === "mar" ? "text-primary-hover" : "text-secondary-hover"}`}
+          >
             <p className="text-ms font-bold leading-none mb-1">
               Entrega en {destination}
             </p>
